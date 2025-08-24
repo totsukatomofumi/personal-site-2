@@ -1,35 +1,123 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { createRef, useRef, useState } from "react";
+import Text from "./components/Text";
+import {
+  APP_CONTEXT as AppContext,
+  IS_DEV as isDev,
+  NUM_OF_SECTIONS as numOfSections,
+} from "./constants";
 
-function App() {
-  const [count, setCount] = useState(0)
+gsap.registerPlugin(ScrollTrigger);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+// ====================== DEBUG =======================
+// Disable console logs in production
+if (!isDev) {
+  console.log = () => {};
 }
 
-export default App
+function App() {
+  // ===================== State =====================
+  const [isScrollable, setIsScrollable] = useState(true);
+  const scrollTriggerRefs = useRef(
+    Array.from({ length: numOfSections }, () => createRef())
+  );
+  const [scrollAnimations, setScrollAnimations] = useState([]);
+
+  // ==================== Helpers ====================
+  // Manually enable scrolling if needed (e.g., after intro animations).
+  const enableScroll = () => {
+    setIsScrollable(true);
+  };
+
+  // Register a scroll animation (tween) with an index to tie it to the correct ScrollTrigger.
+  const registerScrollAnimation = (tween, index) => {
+    setScrollAnimations((prev) => [
+      ...prev,
+      {
+        tween: tween,
+        index: index,
+      },
+    ]);
+  };
+
+  // Remove a scroll animation if needed (e.g., cleanup on unmount).
+  const removeScrollAnimation = (tween) => {
+    setScrollAnimations((prev) =>
+      prev.filter((animation) => animation.tween !== tween)
+    );
+  };
+
+  // ================= Setup Context =================
+  // Exposed values and functions for child components.
+  const contextValue = {
+    enableScroll,
+    registerScrollAnimation,
+    removeScrollAnimation,
+  };
+
+  // ============= Setup ScrollTriggers ==============
+  // This effect will create a ScrollTrigger for each registered scroll animation.
+  // By using the index provided when registering the animation, we can tie the animation to the correct ScrollTrigger.
+  useGSAP(
+    () => {
+      console.log("[DEBUG] Set up ScrollTriggers", {
+        scrollAnimations,
+      });
+
+      // Create a ScrollTrigger for each registered scroll animation.
+      scrollAnimations.forEach((animation) => {
+        const { index, tween } = animation;
+        const trigger = scrollTriggerRefs.current[index].current; // 'index' is used to allocated the correct trigger
+
+        console.log("[DEBUG] Create ScrollTrigger", {
+          trigger,
+          tween,
+        });
+
+        ScrollTrigger.create({
+          trigger: trigger,
+          animation: tween,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+          snap: {
+            snapTo: 1,
+            duration: { max: 1 },
+          },
+          markers: isDev,
+        });
+      });
+
+      console.log("[DEBUG] All ScrollTriggers:", ScrollTrigger.getAll());
+    },
+    { dependencies: [scrollAnimations] }
+  );
+
+  // ==================== Render =====================
+  return (
+    <>
+      {/* ============= Content ================ */}
+      <AppContext value={contextValue}>
+        {/* ============ Foreground ============= */}
+        <Text className="fixed top-0 left-0 z-50 w-screen h-screen" />
+        {/* ============ Background ============= */}
+        {/* Canvas + Scene */}
+      </AppContext>
+      {/* ========== ScrollTriggers ============ */}
+      {isScrollable &&
+        scrollTriggerRefs.current.map((ref, index) => (
+          <div
+            key={index}
+            ref={ref}
+            className={`w-full h-screen ${
+              isDev ? "border-1 border-red-500" : ""
+            }`}
+          />
+        ))}
+    </>
+  );
+}
+
+export default App;
