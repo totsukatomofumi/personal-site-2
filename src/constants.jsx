@@ -85,3 +85,4 @@ export const TEXT_SECTIONS = [
   ],
 ];
 export const NUM_OF_SECTIONS = TEXT_SECTIONS.length;
+export const LINE_ROTATION_ANGLE_INCREMENT = 5; // degrees

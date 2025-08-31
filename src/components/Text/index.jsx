@@ -4,6 +4,7 @@ import { createRef, useContext, useRef } from "react";
 import {
   APP_CONTEXT as AppContext,
   IS_DEV as isDev,
+  LINE_ROTATION_ANGLE_INCREMENT,
   TEXT_SECTIONS as textSections,
 } from "../../constants";
 import Section from "./components/Section";
@@ -41,7 +42,6 @@ function Text({ className, ...props }) {
             y: (accumulatedOffsetY -= section.ref.current.offsetHeight),
             duration: 1,
             ease: "power1.inOut",
-            paused: true,
             immediateRender: false,
           }
         );
@@ -63,8 +63,111 @@ function Text({ className, ...props }) {
   );
 
   // =============== Section Rotation ================
+  useGSAP(() => {}, { dependencies: [] });
 
   // ================ Line Rotation ==================
+  useGSAP(
+    () => {
+      const tweens = content.current.sections.flatMap(
+        (section, sectionIndex) => {
+          const tweens = [];
+
+          // ================== Rotate In =================
+          // Initialize rotation & offsets for per line accumulation.
+          // Rotation by top middle will leave a gap at the bottom, so we also need to increasingly offset Y and Z per line.
+          let accumulatedOffsetAngle = LINE_ROTATION_ANGLE_INCREMENT; // TODO: Make rotation increment global constant
+          let accumulatedOffsetY = 0;
+          let accumulatedOffsetZ = 0;
+
+          if (sectionIndex - 1 >= 0) {
+            // First section has no "rotate in" animation
+            tweens.push(
+              ...section.lines.map((line, lineIndex) => {
+                // Create a tween that rotates the line by the accumulated angle and offsets it by the accumulated Y and Z.
+                const rotationX = accumulatedOffsetAngle;
+                const rotationXRad = (rotationX * Math.PI) / 180; // Convert to radians for trig functions
+                const y = accumulatedOffsetY;
+                const z = accumulatedOffsetZ;
+
+                // Update accumulations for next line based on current line's dimensions and rotation angle.
+                accumulatedOffsetAngle += LINE_ROTATION_ANGLE_INCREMENT;
+                accumulatedOffsetY +=
+                  line.ref.current.offsetHeight * (1 - Math.cos(rotationXRad)); // height * (1 - cos(angle))
+                accumulatedOffsetZ +=
+                  line.ref.current.offsetHeight * Math.sin(rotationXRad); // height * sin(angle)
+
+                const tween = gsap.from(line.ref.current, {
+                  transformOrigin: "top center", // Rotate around top middle for easier calculations of offsets
+                  rotationX: -rotationX,
+                  y: -y,
+                  z: -z,
+                  ease: "power1.inOut",
+                });
+
+                // Register the animation with the app context so App.jsx can register it with the scrollTrigger for the corresponding section.
+                // Since this is the "rotate in" animation, we register it with the previous section's scrollTrigger.
+                appContext.registerScrollAnimation(tween, sectionIndex - 1);
+
+                return tween;
+              })
+            );
+          }
+
+          // ================= Rotate Out =================
+          // Initialize rotation & offsets for per line accumulation.
+          // Rotation by bottom middle will leave a gap at the top, so we also need to increasingly offset Y and Z per line.
+          accumulatedOffsetAngle = LINE_ROTATION_ANGLE_INCREMENT;
+          accumulatedOffsetY = 0;
+          accumulatedOffsetZ = 0;
+
+          if (sectionIndex < content.current.sections.length - 1) {
+            // Last section has no "rotate out" animation
+            tweens.push(
+              ...section.lines.toReversed().map((line, lineIndex) => {
+                // Create a tween that rotates the line by the accumulated angle and offsets it by the accumulated Y and Z.
+                const rotationX = accumulatedOffsetAngle;
+                const rotationXRad = (rotationX * Math.PI) / 180; // Convert to radians for trig functions
+                const y = accumulatedOffsetY;
+                const z = accumulatedOffsetZ;
+
+                // Update accumulations for next line based on current line's dimensions and rotation angle.
+                accumulatedOffsetAngle += LINE_ROTATION_ANGLE_INCREMENT;
+                accumulatedOffsetY +=
+                  line.ref.current.offsetHeight * (1 - Math.cos(rotationXRad)); // height * (1 - cos(angle))
+                accumulatedOffsetZ +=
+                  line.ref.current.offsetHeight * Math.sin(rotationXRad); // height * sin(angle)
+
+                const tween = gsap.to(line.ref.current, {
+                  transformOrigin: "bottom center", // Rotate around bottom middle for easier calculations of offsets
+                  rotationX: rotationX,
+                  y: y,
+                  z: -z,
+                  ease: "power1.inOut",
+                  immediateRender: false,
+                });
+
+                // Register the animation with the app context so App.jsx can register it with the scrollTrigger for the corresponding section.
+                // Since this is the "rotate out" animation, we register it with this section's scrollTrigger.
+                appContext.registerScrollAnimation(tween, sectionIndex);
+
+                return tween;
+              })
+            );
+          }
+
+          return tweens;
+        }
+      );
+
+      // On unmount, remove all registered animations from context.
+      return () => {
+        tweens.forEach((tween) => {
+          appContext.removeScrollAnimation(tween);
+        });
+      };
+    },
+    { dependencies: [] }
+  );
 
   // ==================== Render =====================
   return (
@@ -86,7 +189,9 @@ function Text({ className, ...props }) {
             <Section
               ref={content.current.sections[sectionIndex].ref}
               key={sectionIndex}
-              className={`pb-12 ${isDev ? "border-1 border-orange-500" : ""}`}
+              className={`pb-12 transform-3d perspective-normal ${
+                isDev ? "border-1 border-orange-500" : ""
+              }`}
             >
               {section.map((line, lineIndex) => (
                 <Section.Line
