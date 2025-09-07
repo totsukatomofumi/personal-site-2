@@ -86,3 +86,5 @@ export const TEXT_SECTIONS = [
 ];
 export const NUM_OF_SECTIONS = TEXT_SECTIONS.length;
 export const LINE_ROTATION_ANGLE_INCREMENT = 5; // degrees
+export const LINE_OPACITY_INITIAL_VALUE = 0.9; // initial opacity for the first animated line
+export const LINE_OPACITY_DECREASE_FACTOR = 0.5; // factor by which opacity decreases for each subsequent line

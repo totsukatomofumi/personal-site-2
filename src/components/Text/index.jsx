@@ -4,6 +4,8 @@ import { createRef, useContext, useRef } from "react";
 import {
   APP_CONTEXT as AppContext,
   IS_DEV as isDev,
+  LINE_OPACITY_DECREASE_FACTOR,
+  LINE_OPACITY_INITIAL_VALUE,
   LINE_ROTATION_ANGLE_INCREMENT,
   TEXT_SECTIONS as textSections,
 } from "../../constants";
@@ -75,6 +77,7 @@ function Text({ className, ...props }) {
           let accumulatedOffsetAngle = LINE_ROTATION_ANGLE_INCREMENT;
           let accumulatedOffsetY = 0;
           let accumulatedOffsetZ = 0;
+          let accumulatedOffsetOpacity = LINE_OPACITY_INITIAL_VALUE;
 
           // First section has no "rotate in" animation
           if (sectionIndex - 1 >= 0) {
@@ -84,6 +87,7 @@ function Text({ className, ...props }) {
                 const rotationX = accumulatedOffsetAngle;
                 const y = accumulatedOffsetY;
                 const z = accumulatedOffsetZ;
+                const opacity = accumulatedOffsetOpacity;
 
                 // Update accumulations for next line based on current line's dimensions and rotation angle.
                 const rotationXRad = (rotationX * Math.PI) / 180; // Convert to radians for trig functions
@@ -92,12 +96,14 @@ function Text({ className, ...props }) {
                 accumulatedOffsetZ +=
                   line.ref.current.offsetHeight * Math.sin(rotationXRad); // height * sin(angle)
                 accumulatedOffsetAngle += LINE_ROTATION_ANGLE_INCREMENT;
+                accumulatedOffsetOpacity *= LINE_OPACITY_DECREASE_FACTOR;
 
                 const tween = gsap.from(line.ref.current, {
                   transformOrigin: "top center", // Rotate around top middle for easier calculations of offsets
                   rotationX: -rotationX,
                   y: -y,
                   z: -z,
+                  opacity,
                   ease: "power1.inOut",
                 });
 
@@ -136,6 +142,7 @@ function Text({ className, ...props }) {
                 rotationX: -accumulatedOffsetAngle,
                 y: -accumulatedOffsetY,
                 z: -accumulatedOffsetZ,
+                opacity: 0,
                 ease: "power1.inOut",
               }
             );
@@ -153,6 +160,7 @@ function Text({ className, ...props }) {
           accumulatedOffsetAngle = LINE_ROTATION_ANGLE_INCREMENT;
           accumulatedOffsetY = 0;
           accumulatedOffsetZ = 0;
+          accumulatedOffsetOpacity = LINE_OPACITY_INITIAL_VALUE;
 
           // Last section has no "rotate out" animation
           if (sectionIndex < content.current.sections.length - 1) {
@@ -162,6 +170,7 @@ function Text({ className, ...props }) {
                 const rotationX = accumulatedOffsetAngle;
                 const y = accumulatedOffsetY;
                 const z = accumulatedOffsetZ;
+                const opacity = accumulatedOffsetOpacity;
 
                 // Update accumulations for next line based on current line's dimensions and rotation angle.
                 const rotationXRad = (rotationX * Math.PI) / 180; // Convert to radians for trig functions
@@ -170,12 +179,14 @@ function Text({ className, ...props }) {
                 accumulatedOffsetZ +=
                   line.ref.current.offsetHeight * Math.sin(rotationXRad); // height * sin(angle)
                 accumulatedOffsetAngle += LINE_ROTATION_ANGLE_INCREMENT;
+                accumulatedOffsetOpacity *= LINE_OPACITY_DECREASE_FACTOR;
 
                 const tween = gsap.to(line.ref.current, {
                   transformOrigin: "bottom center", // Rotate around bottom middle for easier calculations of offsets
                   rotationX,
                   y,
                   z: -z,
+                  opacity,
                   ease: "power1.inOut",
                   immediateRender: false,
                 });
@@ -205,6 +216,7 @@ function Text({ className, ...props }) {
                 rotationX: accumulatedOffsetAngle,
                 y: accumulatedOffsetY,
                 z: -accumulatedOffsetZ,
+                opacity: 0,
                 ease: "power1.inOut",
                 immediateRender: false,
               }
