@@ -4,87 +4,39 @@ export const IS_DEV = import.meta.env.DEV;
 export const APP_CONTEXT = createContext();
 export const TEXT_SECTIONS = [
   [
-    <>
-      <span className="font-bold text-blue-600">Welcome</span>
-      {" to my "}
-      <span className="italic text-purple-500">creative</span>
-      {" space"}
-    </>,
-    <>
-      <span className="text-red-500">Design</span>
-      {" meets "}
-      <span className="font-mono bg-gray-200 px-1 rounded">code</span>
-      {" in perfect harmony"}
-    </>,
-    "Simple text line without styling",
-    <>
-      <span className="animate-pulse text-green-500">✨</span>
-      {" Magic happens here "}
-      <span className="animate-pulse text-green-500">✨</span>
-    </>,
+    "Hello, I’m Totsuka.",
+    "I build user-facing web applications, bringing machine",
+    "learning to real-world AI-powered solutions.",
   ],
   [
-    <>
-      <span className="text-2xl">🚀</span>
-      {" Building the "}
-      <span className="font-bold underline">future</span>
-    </>,
-    "One line of code at a time",
-    <>
-      <span className="text-yellow-600 font-semibold">Innovation</span>
-      {" through "}
-      <span className="text-blue-600 font-semibold">collaboration</span>
-    </>,
-    <>
-      {"Let's "}
-      <span className="bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text text-transparent font-bold">
-        create something
-      </span>
-      {" amazing"}
-    </>,
+    "I’m a developer with a passion for building fast, intuitive,",
+    "and visually refined user-facing applications across web",
+    "and mobile platforms.",
   ],
   [
-    <>
-      <span className="font-bold text-blue-600">Welcome</span>
-      {" to my "}
-      <span className="italic text-purple-500">creative</span>
-      {" space"}
-    </>,
-    <>
-      <span className="text-red-500">Design</span>
-      {" meets "}
-      <span className="font-mono bg-gray-200 px-1 rounded">code</span>
-      {" in perfect harmony"}
-    </>,
-    "Simple text line without styling",
-    <>
-      <span className="animate-pulse text-green-500">✨</span>
-      {" Magic happens here "}
-      <span className="animate-pulse text-green-500">✨</span>
-    </>,
+    "My favourite work lies at the intersection of web",
+    "development and AI, creating seamless digital experiences",
+    "that are both functional and beautiful, while leveraging",
+    "machine learning to deliver intelligent, user-friendly AI",
+    "solutions to the forefront of how we interact with",
+    "technology.",
   ],
   [
-    <>
-      <span className="text-2xl">🚀</span>
-      {" Building the "}
-      <span className="font-bold underline">future</span>
-    </>,
-    "One line of code at a time",
-    <>
-      <span className="text-yellow-600 font-semibold">Innovation</span>
-      {" through "}
-      <span className="text-blue-600 font-semibold">collaboration</span>
-    </>,
-    <>
-      {"Let's "}
-      <span className="bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text text-transparent font-bold">
-        create something
-      </span>
-      {" amazing"}
-    </>,
+    "My fascination with technology began with science fiction.",
+    "The futuristic, fictional worlds of piloting giant mechas,",
+    "intelligent robot companions, and life in space colonies—",
+    "they inspire my pursuit of engineering and technology, and",
+    "I hope to contribute to innovations that turn science fiction",
+    "into reality.",
+  ],
+  [
+    "In my spare time, I’m an avid car enthusiast with a deep",
+    "appreciation for JDM culture. I enjoy taking night drives",
+    "and road trips abroad, where I find freedom and peace on",
+    "the open road.",
   ],
 ];
 export const NUM_OF_SECTIONS = TEXT_SECTIONS.length;
 export const LINE_ROTATION_ANGLE_INCREMENT = 5; // degrees
-export const LINE_OPACITY_INITIAL_VALUE = 0.9; // initial opacity for the first animated line
-export const LINE_OPACITY_DECREASE_FACTOR = 0.5; // factor by which opacity decreases for each subsequent line
+export const LINE_OPACITY_INITIAL_VALUE = 0.2; // initial opacity for the first animated line
+export const LINE_OPACITY_DECREASE_FACTOR = 0.3; // factor by which opacity decreases for each subsequent line
