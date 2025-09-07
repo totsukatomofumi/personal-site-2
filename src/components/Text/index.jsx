@@ -173,8 +173,8 @@ function Text({ className, ...props }) {
 
                 const tween = gsap.to(line.ref.current, {
                   transformOrigin: "bottom center", // Rotate around bottom middle for easier calculations of offsets
-                  rotationX: rotationX,
-                  y: y,
+                  rotationX,
+                  y,
                   z: -z,
                   ease: "power1.inOut",
                   immediateRender: false,
@@ -242,7 +242,7 @@ function Text({ className, ...props }) {
         {/* =================== Content =================== */}
         <div
           ref={content.current.ref}
-          className={`w-1/2 max-w-screen flex flex-col text-xl leading-12 transform-3d perspective-normal ${
+          className={`w-1/2 max-w-screen flex flex-col text-xl leading-12 perspective-normal ${
             isDev ? "border-1 border-blue-500" : ""
           }`}
         >
@@ -251,7 +251,7 @@ function Text({ className, ...props }) {
             <Section
               ref={content.current.sections[sectionIndex].ref}
               key={sectionIndex}
-              className={`pb-12 transform-3d ${
+              className={`pb-12 perspective-normal ${
                 isDev ? "border-1 border-orange-500" : ""
               }`}
             >
