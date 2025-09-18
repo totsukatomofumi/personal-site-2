@@ -6,6 +6,9 @@ import Text from "./components/Text";
 import {
   APP_CONTEXT as AppContext,
   IS_DEV as isDev,
+  IS_DEV_HIDE_TEXT as isDevHideText,
+  IS_DEV_SHOW_SCROLL_TRIGGER_MARKERS as isDevShowScrollTriggerMarkers,
+  IS_DEV_SHOW_TEXT_OVERLAY as isDevShowTextOverlay,
   NUM_OF_SECTIONS as numOfSections,
 } from "./constants";
 
@@ -86,7 +89,7 @@ function App() {
             snapTo: 1,
             duration: { max: 1 },
           },
-          markers: isDev,
+          markers: isDevShowScrollTriggerMarkers,
         });
       });
 
@@ -101,7 +104,9 @@ function App() {
       {/* ============= Content ================ */}
       <AppContext value={contextValue}>
         {/* ============ Foreground ============= */}
-        <Text className="fixed top-0 left-0 z-50 w-screen h-screen" />
+        {!isDevHideText && (
+          <Text className="fixed top-0 left-0 z-50 w-screen h-screen" />
+        )}
         {/* ============ Background ============= */}
         {/* Canvas + Scene */}
       </AppContext>
@@ -112,7 +117,7 @@ function App() {
             key={index}
             ref={ref}
             className={`w-full h-screen ${
-              isDev ? "border-1 border-red-500" : ""
+              isDevShowTextOverlay ? "border-1 border-red-500" : ""
             }`}
           />
         ))}

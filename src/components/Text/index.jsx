@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { createRef, useContext, useRef } from "react";
 import {
   APP_CONTEXT as AppContext,
-  IS_DEV as isDev,
+  IS_DEV_SHOW_TEXT_OVERLAY as isDevShowTextOverlay,
   LINE_OPACITY_DECREASE_FACTOR,
   LINE_OPACITY_INITIAL_VALUE,
   LINE_ROTATION_ANGLE_INCREMENT,
@@ -248,14 +248,14 @@ function Text({ className, ...props }) {
     <div className={className} {...props}>
       <div
         className={`mx-auto my-72 w-5xl h-72 ${
-          isDev ? "border-1 border-green-500" : ""
+          isDevShowTextOverlay ? "border-1 border-green-500" : ""
         }`}
       >
         {/* =================== Content =================== */}
         <div
           ref={content.current.ref}
           className={`w-1/2 max-w-screen flex flex-col text-xl leading-12 perspective-normal ${
-            isDev ? "border-1 border-blue-500" : ""
+            isDevShowTextOverlay ? "border-1 border-blue-500" : ""
           }`}
         >
           {/* =================== Sections =================== */}
@@ -264,7 +264,7 @@ function Text({ className, ...props }) {
               ref={content.current.sections[sectionIndex].ref}
               key={sectionIndex}
               className={`pb-12 perspective-normal ${
-                isDev ? "border-1 border-orange-500" : ""
+                isDevShowTextOverlay ? "border-1 border-orange-500" : ""
               }`}
             >
               {section.map((line, lineIndex) => (
@@ -274,7 +274,7 @@ function Text({ className, ...props }) {
                   }
                   key={lineIndex}
                   className={`text-left ${
-                    isDev ? "border-1 border-purple-500" : ""
+                    isDevShowTextOverlay ? "border-1 border-purple-500" : ""
                   }`}
                 >
                   {line}
