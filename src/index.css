@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-background: #ebebeb;
   --color-text: #000000;
@@ -11,8 +13,6 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: var(--color-text);
-  background-color: var(--color-background);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

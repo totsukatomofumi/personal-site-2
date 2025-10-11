@@ -1,8 +1,7 @@
 import { Line } from "./components";
 
 function Section({ ref, children, className, ...props }) {
-  // Line animations are managed here, registering them with the app context
-
+  // This component is purely for styling and semantics.
   return (
     <section ref={ref} className={className} {...props}>
       {children}

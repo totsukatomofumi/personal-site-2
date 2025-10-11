@@ -254,7 +254,7 @@ function Text({ className, ...props }) {
         {/* =================== Content =================== */}
         <div
           ref={content.current.ref}
-          className={`w-1/2 max-w-screen flex flex-col text-xl text-shadow-[-1px_-1px_0_var(--color-background),_1px_-1px_0_var(--color-background),_-1px_1px_0_var(--color-background),_1px_1px_0_var(--color-background)] leading-12 perspective-normal ${
+          className={`w-1/2 max-w-screen flex flex-col text-xl leading-12 text-text dark:text-background dark:text-shadow-[-1px_-1px_0_var(--color-text),_1px_-1px_0_var(--color-text),_-1px_1px_0_var(--color-text),_1px_1px_0_var(--color-text)] text-shadow-[-1px_-1px_0_var(--color-background),_1px_-1px_0_var(--color-background),_-1px_1px_0_var(--color-background),_1px_1px_0_var(--color-background)] transition-[colors,text-shadow] perspective-normal ${
             isDevShowTextOverlay ? "border-1 border-blue-500" : ""
           }`}
         >

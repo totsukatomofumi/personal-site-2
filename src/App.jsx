@@ -1,8 +1,10 @@
+import { faLanguage, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { createRef, useRef, useState } from "react";
-import Text from "./components/Text";
+import { Text, Toolbar } from "./components/";
 import {
   APP_CONTEXT as AppContext,
   IS_DEV as isDev,
@@ -22,6 +24,7 @@ if (!isDev) {
 
 function App() {
   // ===================== State =====================
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [isScrollable, setIsScrollable] = useState(true);
   const scrollTriggerRefs = useRef(
     Array.from({ length: numOfSections }, () => createRef())
@@ -55,6 +58,7 @@ function App() {
   // ================= Setup Context =================
   // Exposed values and functions for child components.
   const contextValue = {
+    isDarkMode,
     enableScroll,
     registerScrollAnimation,
     removeScrollAnimation,
@@ -100,12 +104,27 @@ function App() {
 
   // ==================== Render =====================
   return (
-    <>
+    <div
+      className={`bg-background dark:bg-text transition-colors ${
+        isDarkMode ? "dark" : ""
+      }`}
+    >
       {/* ============= Content ================ */}
       <AppContext value={contextValue}>
         {/* ============ Foreground ============= */}
+        <Toolbar className="fixed top-5 right-5 z-50">
+          <Toolbar.Button
+            icon={<FontAwesomeIcon icon={faLanguage} />}
+            disabled
+          />
+          <Toolbar.Button
+            icon={<FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />}
+            title={isDarkMode ? "Light Mode" : "Dark Mode"}
+            onClick={() => setIsDarkMode(!isDarkMode)}
+          />
+        </Toolbar>
         {!isDevHideText && (
-          <Text className="fixed top-0 left-0 z-50 w-screen h-screen" />
+          <Text className="fixed top-0 left-0 z-40 w-screen h-screen" />
         )}
         {/* ============ Background ============= */}
         {/* Canvas + Scene */}
@@ -121,7 +140,7 @@ function App() {
             }`}
           />
         ))}
-    </>
+    </div>
   );
 }
 
