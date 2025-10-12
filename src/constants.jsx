@@ -3,7 +3,8 @@ import { createContext } from "react";
 export const IS_DEV = import.meta.env.DEV;
 export const IS_DEV_SHOW_SCROLL_TRIGGER_MARKERS = IS_DEV && true; // set to true to show ScrollTrigger markers
 export const IS_DEV_SHOW_TEXT_OVERLAY = IS_DEV && false; // set to true to enable dev text overlay
-export const IS_DEV_HIDE_TEXT = IS_DEV && false; // set to true to hide text sections in dev mode
+export const IS_DEV_HIDE_TEXT = IS_DEV && true; // set to true to hide text sections in dev mode
+export const IS_DEV_SHOW_STATS = IS_DEV && true; // set to true to show stats (FPS, etc.)
 export const APP_CONTEXT = createContext();
 export const TEXT_SECTIONS = [
   [

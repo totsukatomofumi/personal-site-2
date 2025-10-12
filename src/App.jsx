@@ -1,10 +1,11 @@
 import { faLanguage, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGSAP } from "@gsap/react";
+import { Canvas } from "@react-three/fiber";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { createRef, useRef, useState } from "react";
-import { Text, Toolbar } from "./components/";
+import { Scene, Text, Toolbar } from "./components/";
 import {
   APP_CONTEXT as AppContext,
   IS_DEV as isDev,
@@ -110,25 +111,31 @@ function App() {
       }`}
     >
       {/* ============= Content ================ */}
-      <AppContext value={contextValue}>
-        {/* ============ Foreground ============= */}
-        <Toolbar className="fixed top-5 right-5 z-50">
-          <Toolbar.Button
-            icon={<FontAwesomeIcon icon={faLanguage} />}
-            disabled
-          />
-          <Toolbar.Button
-            icon={<FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />}
-            title={isDarkMode ? "Light Mode" : "Dark Mode"}
-            onClick={() => setIsDarkMode(!isDarkMode)}
-          />
-        </Toolbar>
-        {!isDevHideText && (
-          <Text className="fixed top-0 left-0 z-40 w-screen h-screen" />
-        )}
-        {/* ============ Background ============= */}
-        {/* Canvas + Scene */}
-      </AppContext>
+      <div className="fixed top-0 left-0 w-screen h-screen">
+        <AppContext value={contextValue}>
+          {/* ============ Foreground ============= */}
+          <Toolbar className="absolute top-5 right-5 z-50">
+            <Toolbar.Button
+              icon={<FontAwesomeIcon icon={faLanguage} />}
+              disabled
+            />
+            <Toolbar.Button
+              icon={<FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />}
+              title={isDarkMode ? "Light Mode" : "Dark Mode"}
+              onClick={() => setIsDarkMode(!isDarkMode)}
+            />
+          </Toolbar>
+          {!isDevHideText && (
+            <Text className="absolute top-0 left-0 z-40 w-full h-full" />
+          )}
+          {/* ============ Background ============= */}
+          <div className="absolute top-0 left-0 -z-50 w-full h-full">
+            <Canvas>
+              <Scene />
+            </Canvas>
+          </div>
+        </AppContext>
+      </div>
       {/* ========== ScrollTriggers ============ */}
       {isScrollable &&
         scrollTriggerRefs.current.map((ref, index) => (
