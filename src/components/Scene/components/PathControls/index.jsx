@@ -1,6 +1,13 @@
 import { Box, Line, TransformControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { createRef, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  cloneElement,
+  createRef,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import * as THREE from "three";
 
 function PathControls({ children, initialPoints }) {
@@ -11,7 +18,15 @@ function PathControls({ children, initialPoints }) {
   );
   const curveRef = useRef(); // Store the curve used for movement path
   const [points, setPoints] = useState(null); // For curve visualization
-  const childrenGroupRef = useRef(); // Group to hold children, which will move along the path
+  const [childrenWithRefs, childrenRefs] = useMemo(() => {
+    // Create refs for each child and clone children with refs assigned
+    const refs = children.map(() => createRef());
+    const childrenWithRefs = children.map((child, index) =>
+      cloneElement(child, { ref: refs[index] })
+    );
+
+    return [childrenWithRefs, refs];
+  }, [children]);
   const [transformTarget, setTransformTarget] = useState(null); // Handle transform control target
 
   // =================== Initial Curve Setup ===================
@@ -27,11 +42,17 @@ function PathControls({ children, initialPoints }) {
   // ==================== Movement Animation ====================
   // Animate movement of children along the curve
   useFrame((state) => {
-    if (!curveRef.current || !childrenGroupRef.current) return;
+    if (!curveRef.current || childrenRefs.some((ref) => !ref.current)) return;
 
-    const progress = (state.clock.getElapsedTime() * 0.1) % 1;
-    const position = curveRef.current.getPointAt(progress);
-    childrenGroupRef.current.position.copy(position);
+    const elapsed = state.clock.getElapsedTime() * 0.1;
+    const diff = 1 / childrenRefs.length;
+
+    childrenRefs.forEach((ref, index) => {
+      const offset = index * diff;
+      const progress = (elapsed + offset) % 1;
+      const position = curveRef.current.getPointAt(progress);
+      ref.current.position.copy(position);
+    });
   });
 
   // ========================== Render ==========================
@@ -65,7 +86,7 @@ function PathControls({ children, initialPoints }) {
       {points && <Line points={points} color="green" />}
 
       {/* =================== Moving Children =================== */}
-      <group ref={childrenGroupRef}>{children}</group>
+      {childrenWithRefs}
     </>
   );
 }
