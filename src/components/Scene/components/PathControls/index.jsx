@@ -1,4 +1,4 @@
-import { Box, Line, TransformControls } from "@react-three/drei";
+import { Box, Html, Line, TransformControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   cloneElement,
@@ -60,15 +60,31 @@ function PathControls({ children, initialPoints }) {
     <>
       {/* ====================== Handles ====================== */}
       {initialPoints.map((point, index) => (
-        <Box
+        // ==================== Handle Group ====================
+        <group
           key={index}
           ref={handleRefs[index]}
           position={point}
-          args={[0.1, 0.1, 0.1]}
-          material-color="red"
           onClick={() => setTransformTarget(handleRefs[index])}
           onPointerMissed={() => setTransformTarget(null)}
-        />
+        >
+          {/* =============== Handle Info Overlay =============== */}
+          <Html position={[0.2, 0.2, 0]}>
+            <div className="text-nowrap pointer-events-none text-text dark:text-background">
+              <div>
+                {`x = ${handleRefs[index].current?.position.x.toFixed(2)}`}
+              </div>
+              <div>
+                {`y = ${handleRefs[index].current?.position.y.toFixed(2)}`}
+              </div>
+              <div>
+                {`z = ${handleRefs[index].current?.position.z.toFixed(2)}`}
+              </div>
+            </div>
+          </Html>
+          {/* ==================== Handle Box ==================== */}
+          <Box args={[0.1, 0.1, 0.1]} material-color="red" />
+        </group>
       ))}
 
       {/* ============= Handle Transform Controls ============= */}
