@@ -10,6 +10,7 @@ import {
   APP_CONTEXT as AppContext,
   IS_DEV as isDev,
   IS_DEV_HIDE_TEXT as isDevHideText,
+  IS_DEV_POINTER_BYPASS_TEXT as isDevPointerBypassText,
   IS_DEV_SHOW_SCROLL_TRIGGER_MARKERS as isDevShowScrollTriggerMarkers,
   IS_DEV_SHOW_TEXT_OVERLAY as isDevShowTextOverlay,
   NUM_OF_SECTIONS as numOfSections,
@@ -126,7 +127,11 @@ function App() {
             />
           </Toolbar>
           {!isDevHideText && (
-            <Text className="absolute top-0 left-0 z-40 w-full h-full" />
+            <Text
+              className={`absolute top-0 left-0 z-40 w-full h-full ${
+                isDevPointerBypassText ? "pointer-events-none" : ""
+              }`}
+            />
           )}
           {/* ============ Background ============= */}
           <div className="absolute top-0 left-0 -z-50 w-full h-full">
