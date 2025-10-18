@@ -78,6 +78,7 @@ function PathControls({ children, initialPoints }) {
           mode="translate"
           onObjectChange={() => {
             setPoints(curveRef.current.getPoints(50)); // Update curve visualization
+            curveRef.current.needsUpdate = true; // Mark curve as needing update
           }}
         />
       )}
