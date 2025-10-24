@@ -9,7 +9,7 @@ import {
   LINE_ROTATION_ANGLE_INCREMENT,
   TEXT_SECTIONS as textSections,
 } from "../../constants";
-import Section from "./components/Section";
+import { Section } from "./components";
 
 function Text({ className, ...props }) {
   // ========================= State =========================
