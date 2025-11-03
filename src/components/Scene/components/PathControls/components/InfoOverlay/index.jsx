@@ -44,23 +44,23 @@ const InfoOverlay = ({ position, gap, repeat, setRepeat, speed, setSpeed }) => {
 
         {/* ================= Speed Controls ================= */}
         <div>
-          {`speed = ${speed.toFixed(2)}`}
+          {`speed = ${speed.toFixed(3)}`}
           <AddButton
             onClick={() => {
-              setSpeed((prev) => prev + 0.01);
+              setSpeed((prev) => prev + 0.001);
             }}
           />
           <SubtractButton
             onClick={() => {
-              setSpeed((prev) => Math.max(0, prev - 0.01));
+              setSpeed((prev) => Math.max(0, prev - 0.001));
             }}
           />
         </div>
         <input
           type="range"
           min="0"
-          max="10"
-          step="0.01"
+          max="1"
+          step="0.001"
           value={speed}
           onChange={(e) => setSpeed(parseFloat(e.target.value))}
         />

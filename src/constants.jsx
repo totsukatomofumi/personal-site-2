@@ -46,3 +46,4 @@ export const TEXT_LINE_ROTATION_ANGLE_INCREMENT = 5; // degrees
 export const TEXT_LINE_OPACITY_INITIAL_VALUE = 0.2; // initial opacity for the first animated line
 export const TEXT_LINE_OPACITY_DECREASE_FACTOR = 0.3; // factor by which opacity decreases for each subsequent line
 export const SCENE_TEXT_OUTLINE_WIDTH = 0.01; // outline width for scene text
+export const SCENE_TEXT_ENTER_EXIT_ANIMATION_THRESHOLD = 0.5; // distance units for enter/exit animation threshold
