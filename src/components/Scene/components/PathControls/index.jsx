@@ -1,4 +1,4 @@
-import { Box, Html, Line, TransformControls } from "@react-three/drei";
+import { Line, TransformControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   cloneElement,
@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import * as THREE from "three";
+import { Handle, InfoOverlay } from "./components";
 
 function PathControls({ children, initialPoints }) {
   // ===================== Refs & States =====================
@@ -18,15 +19,23 @@ function PathControls({ children, initialPoints }) {
   );
   const curveRef = useRef(); // Store the curve used for movement path
   const [points, setPoints] = useState(null); // For curve visualization
+  const [repeat, setRepeat] = useState(1); // Number of times to repeat the path
+  const [speed, setSpeed] = useState(1); // Speed of movement along the path
   const [childrenWithRefs, childrenRefs] = useMemo(() => {
+    // Determine how many times to repeat the children based on 'repeat' state
+    const renderChildren = Array.from(
+      { length: repeat },
+      () => children
+    ).flat();
+
     // Create refs for each child and clone children with refs assigned
-    const refs = children.map(() => createRef());
-    const childrenWithRefs = children.map((child, index) =>
+    const refs = renderChildren.map(() => createRef());
+    const childrenWithRefs = renderChildren.map((child, index) =>
       cloneElement(child, { ref: refs[index] })
     );
 
     return [childrenWithRefs, refs];
-  }, [children]);
+  }, [children, repeat]);
   const [transformTarget, setTransformTarget] = useState(null); // Handle transform control target
 
   // =================== Initial Curve Setup ===================
@@ -44,7 +53,7 @@ function PathControls({ children, initialPoints }) {
   useFrame((state) => {
     if (!curveRef.current || childrenRefs.some((ref) => !ref.current)) return;
 
-    const elapsed = state.clock.getElapsedTime() * 0.1;
+    const elapsed = state.clock.getElapsedTime() * 0.1 * speed;
     const diff = 1 / childrenRefs.length;
 
     childrenRefs.forEach((ref, index) => {
@@ -60,31 +69,13 @@ function PathControls({ children, initialPoints }) {
     <>
       {/* ====================== Handles ====================== */}
       {initialPoints.map((point, index) => (
-        // ==================== Handle Group ====================
-        <group
+        <Handle
           key={index}
           ref={handleRefs[index]}
           position={point}
           onClick={() => setTransformTarget(handleRefs[index])}
           onPointerMissed={() => setTransformTarget(null)}
-        >
-          {/* =============== Handle Info Overlay =============== */}
-          <Html position={[0.2, 0.2, 0]}>
-            <div className="text-nowrap pointer-events-none text-text dark:text-background">
-              <div>
-                {`x = ${handleRefs[index].current?.position.x.toFixed(2)}`}
-              </div>
-              <div>
-                {`y = ${handleRefs[index].current?.position.y.toFixed(2)}`}
-              </div>
-              <div>
-                {`z = ${handleRefs[index].current?.position.z.toFixed(2)}`}
-              </div>
-            </div>
-          </Html>
-          {/* ==================== Handle Box ==================== */}
-          <Box args={[0.1, 0.1, 0.1]} material-color="red" />
-        </group>
+        />
       ))}
 
       {/* ============= Handle Transform Controls ============= */}
@@ -104,6 +95,20 @@ function PathControls({ children, initialPoints }) {
 
       {/* =================== Moving Children =================== */}
       {childrenWithRefs}
+
+      {/* ================== Path Info Overlay ================== */}
+      <InfoOverlay
+        position={[-6.5, 3.25, 0]}
+        gap={
+          curveRef.current
+            ? curveRef.current.getLength() / (childrenRefs.length - 1)
+            : 0
+        }
+        repeat={repeat}
+        setRepeat={setRepeat}
+        speed={speed}
+        setSpeed={setSpeed}
+      />
     </>
   );
 }
