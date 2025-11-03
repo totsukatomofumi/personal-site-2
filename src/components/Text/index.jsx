@@ -4,9 +4,9 @@ import { createRef, useContext, useRef } from "react";
 import {
   APP_CONTEXT as AppContext,
   IS_DEV_SHOW_TEXT_OVERLAY as isDevShowTextOverlay,
-  LINE_OPACITY_DECREASE_FACTOR,
-  LINE_OPACITY_INITIAL_VALUE,
-  LINE_ROTATION_ANGLE_INCREMENT,
+  TEXT_LINE_OPACITY_DECREASE_FACTOR as textLineOpacityDecreaseFactor,
+  TEXT_LINE_OPACITY_INITIAL_VALUE as textLineOpacityInitialValue,
+  TEXT_LINE_ROTATION_ANGLE_INCREMENT as textLineRotationAngleIncrement,
   TEXT_SECTIONS as textSections,
 } from "../../constants";
 import { Section } from "./components";
@@ -74,15 +74,15 @@ function Text({ className, ...props }) {
           // ================= Line Rotate In =================
           // Initialize rotation & offsets for per line accumulation.
           // Rotation by top middle will leave a gap at the bottom, so we also need to increasingly offset Y and Z per line.
-          let accumulatedOffsetAngle = LINE_ROTATION_ANGLE_INCREMENT;
+          let accumulatedOffsetAngle = textLineRotationAngleIncrement;
           let accumulatedOffsetY = 0;
           let accumulatedOffsetZ = 0;
-          let accumulatedOffsetOpacity = LINE_OPACITY_INITIAL_VALUE;
+          let accumulatedOffsetOpacity = textLineOpacityInitialValue;
 
           // First section has no "rotate in" animation
           if (sectionIndex - 1 >= 0) {
             tweens.push(
-              ...section.lines.map((line, lineIndex) => {
+              ...section.lines.map((line) => {
                 // Create a tween that rotates the line by the accumulated angle and offsets it by the accumulated Y and Z.
                 const rotationX = accumulatedOffsetAngle;
                 const y = accumulatedOffsetY;
@@ -95,8 +95,8 @@ function Text({ className, ...props }) {
                   line.ref.current.offsetHeight * (1 - Math.cos(rotationXRad)); // height * (1 - cos(angle))
                 accumulatedOffsetZ +=
                   line.ref.current.offsetHeight * Math.sin(rotationXRad); // height * sin(angle)
-                accumulatedOffsetAngle += LINE_ROTATION_ANGLE_INCREMENT;
-                accumulatedOffsetOpacity *= LINE_OPACITY_DECREASE_FACTOR;
+                accumulatedOffsetAngle += textLineRotationAngleIncrement;
+                accumulatedOffsetOpacity *= textLineOpacityDecreaseFactor;
 
                 const tween = gsap.from(line.ref.current, {
                   transformOrigin: "top center", // Rotate around top middle for easier calculations of offsets
@@ -157,15 +157,15 @@ function Text({ className, ...props }) {
           // ================= Line Rotate Out =================
           // Initialize rotation & offsets for per line accumulation.
           // Rotation by bottom middle will leave a gap at the top, so we also need to increasingly offset Y and Z per line.
-          accumulatedOffsetAngle = LINE_ROTATION_ANGLE_INCREMENT;
+          accumulatedOffsetAngle = textLineRotationAngleIncrement;
           accumulatedOffsetY = 0;
           accumulatedOffsetZ = 0;
-          accumulatedOffsetOpacity = LINE_OPACITY_INITIAL_VALUE;
+          accumulatedOffsetOpacity = textLineOpacityInitialValue;
 
           // Last section has no "rotate out" animation
           if (sectionIndex < content.current.sections.length - 1) {
             tweens.push(
-              ...section.lines.toReversed().map((line, lineIndex) => {
+              ...section.lines.toReversed().map((line) => {
                 // Create a tween that rotates the line by the accumulated angle and offsets it by the accumulated Y and Z.
                 const rotationX = accumulatedOffsetAngle;
                 const y = accumulatedOffsetY;
@@ -178,8 +178,8 @@ function Text({ className, ...props }) {
                   line.ref.current.offsetHeight * (1 - Math.cos(rotationXRad)); // height * (1 - cos(angle))
                 accumulatedOffsetZ +=
                   line.ref.current.offsetHeight * Math.sin(rotationXRad); // height * sin(angle)
-                accumulatedOffsetAngle += LINE_ROTATION_ANGLE_INCREMENT;
-                accumulatedOffsetOpacity *= LINE_OPACITY_DECREASE_FACTOR;
+                accumulatedOffsetAngle += textLineRotationAngleIncrement;
+                accumulatedOffsetOpacity *= textLineOpacityDecreaseFactor;
 
                 const tween = gsap.to(line.ref.current, {
                   transformOrigin: "bottom center", // Rotate around bottom middle for easier calculations of offsets

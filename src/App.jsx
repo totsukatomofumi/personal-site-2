@@ -13,8 +13,9 @@ import {
   IS_DEV_POINTER_BYPASS_TEXT as isDevPointerBypassText,
   IS_DEV_SHOW_SCROLL_TRIGGER_MARKERS as isDevShowScrollTriggerMarkers,
   IS_DEV_SHOW_TEXT_OVERLAY as isDevShowTextOverlay,
-  NUM_OF_SECTIONS as numOfSections,
+  TEXT_NUM_OF_SECTIONS as textNumOfSections,
 } from "./constants";
+import * as THREE from "three";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -29,7 +30,7 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isScrollable, setIsScrollable] = useState(true);
   const scrollTriggerRefs = useRef(
-    Array.from({ length: numOfSections }, () => createRef())
+    Array.from({ length: textNumOfSections }, () => createRef())
   );
   const [scrollAnimations, setScrollAnimations] = useState([]);
 
@@ -135,7 +136,11 @@ function App() {
           )}
           {/* ============ Background ============= */}
           <div className="absolute top-0 left-0 -z-50 w-full h-full">
-            <Canvas>
+            <Canvas
+              gl={{
+                toneMapping: THREE.NoToneMapping,
+              }}
+            >
               <Scene />
             </Canvas>
           </div>

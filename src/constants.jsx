@@ -41,7 +41,8 @@ export const TEXT_SECTIONS = [
     "the open road.",
   ],
 ];
-export const NUM_OF_SECTIONS = TEXT_SECTIONS.length;
-export const LINE_ROTATION_ANGLE_INCREMENT = 5; // degrees
-export const LINE_OPACITY_INITIAL_VALUE = 0.2; // initial opacity for the first animated line
-export const LINE_OPACITY_DECREASE_FACTOR = 0.3; // factor by which opacity decreases for each subsequent line
+export const TEXT_NUM_OF_SECTIONS = TEXT_SECTIONS.length;
+export const TEXT_LINE_ROTATION_ANGLE_INCREMENT = 5; // degrees
+export const TEXT_LINE_OPACITY_INITIAL_VALUE = 0.2; // initial opacity for the first animated line
+export const TEXT_LINE_OPACITY_DECREASE_FACTOR = 0.3; // factor by which opacity decreases for each subsequent line
+export const SCENE_TEXT_OUTLINE_WIDTH = 0.01; // outline width for scene text
