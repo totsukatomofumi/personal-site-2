@@ -1,22 +1,8 @@
-import { Stats, Text } from "@react-three/drei";
-import {
-  APP_CONTEXT as AppContext,
-  IS_DEV_SHOW_STATS as isDevShowStats,
-  SCENE_TEXT_OUTLINE_WIDTH as sceneTextOutlineWidth,
-} from "../../constants";
-import { PathControls } from "./components/";
-import { useContext } from "react";
+import { Stats } from "@react-three/drei";
+import { IS_DEV_SHOW_STATS as isDevShowStats } from "../../constants";
+import { AnimatedText, PathControls } from "./components/";
 
 function Scene() {
-  const rootStyles = getComputedStyle(document.documentElement);
-  const colorBackground = getComputedStyle(document.documentElement)
-    .getPropertyValue("--color-background")
-    .trim();
-  const colorText = rootStyles.getPropertyValue("--color-text").trim();
-  const appContext = useContext(AppContext);
-  const textColor = appContext.isDarkMode ? colorBackground : colorText;
-  const outlineColor = appContext.isDarkMode ? colorText : colorBackground;
-
   return (
     <>
       <PathControls
@@ -27,27 +13,9 @@ function Scene() {
           [3, 0, 2],
         ]}
       >
-        <Text
-          color={textColor}
-          outlineColor={outlineColor}
-          outlineWidth={sceneTextOutlineWidth}
-        >
-          と
-        </Text>
-        <Text
-          color={textColor}
-          outlineColor={outlineColor}
-          outlineWidth={sceneTextOutlineWidth}
-        >
-          つ
-        </Text>
-        <Text
-          color={textColor}
-          outlineColor={outlineColor}
-          outlineWidth={sceneTextOutlineWidth}
-        >
-          か
-        </Text>
+        <AnimatedText>と</AnimatedText>
+        <AnimatedText>つ</AnimatedText>
+        <AnimatedText>か</AnimatedText>
       </PathControls>
       {isDevShowStats && <Stats className="stats" />}
     </>

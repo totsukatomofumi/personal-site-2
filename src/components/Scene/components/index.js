@@ -1,3 +1,4 @@
+import AnimatedText from "./AnimatedText";
 import PathControls from "./PathControls";
 
-export { PathControls };
+export { AnimatedText, PathControls };

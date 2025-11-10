@@ -23,7 +23,7 @@ function PathControls({ children, initialPoints }) {
   const curveRef = useRef(); // Store the curve used for movement path
   const [points, setPoints] = useState(null); // For curve visualization
   const [repeat, setRepeat] = useState(1); // Number of times to repeat the path
-  const [speed, setSpeed] = useState(0.1); // Speed of movement along the path
+  const [speed, setSpeed] = useState(0.04); // Speed of movement along the path
   const [childrenWithRefs, childrenRefs] = useMemo(() => {
     // Determine how many times to repeat the children based on 'repeat' state
     const renderChildren = Array.from(
