@@ -23,7 +23,7 @@ function PathControls({ children, initialPoints }) {
   const curveRef = useRef(); // Store the curve used for movement path
   const [points, setPoints] = useState(null); // For curve visualization
   const [repeat, setRepeat] = useState(1); // Number of times to repeat the path
-  const [speed, setSpeed] = useState(0.04); // Speed of movement along the path
+  const [speed, setSpeed] = useState(0.04); // Speed of movement along the path (length per second)
   const [childrenWithRefs, childrenRefs] = useMemo(() => {
     // Determine how many times to repeat the children based on 'repeat' state
     const renderChildren = Array.from(
@@ -40,8 +40,8 @@ function PathControls({ children, initialPoints }) {
     return [childrenWithRefs, refs];
   }, [children, repeat]);
   const [transformTarget, setTransformTarget] = useState(null); // Handle transform control target
-  const [exitChildRef, setExitChildRef] = useState(null); // For GSAP exit animation
-  const [enterChildRef, setEnterChildRef] = useState(null); // For GSAP enter animation
+  const childrenScaleAnimationsRef = useRef([]); // Store GSAP scale animations for children
+  const cumulativeProgressRef = useRef(0); // To track current progress along the curve
 
   // =================== Initial Curve Setup ===================
   // Set up initial curve and points for visualization, whenever handleRefs change (i.e., when new handles are created)
@@ -55,69 +55,69 @@ function PathControls({ children, initialPoints }) {
 
   // ==================== Movement Animation ====================
   // Animate movement of children along the curve
-  useFrame((state) => {
+  useFrame((_, delta) => {
     if (!curveRef.current || childrenRefs.some((ref) => !ref.current)) return;
 
-    const elapsed = state.clock.getElapsedTime() * speed;
-    const diff = 1 / childrenRefs.length;
+    cumulativeProgressRef.current +=
+      (delta * speed) / curveRef.current.getLength(); // Normalize speed by curve length
+    const progressDiff = 1 / childrenRefs.length;
 
     childrenRefs.forEach((ref, index) => {
-      const offset = index * diff;
-      const progress = (elapsed + offset) % 1;
-      const position = curveRef.current.getPointAt(progress);
+      const offsetProgress = index * progressDiff;
+      const cumulativeProgress = cumulativeProgressRef.current + offsetProgress;
+      const progress =
+        cumulativeProgress >= 0
+          ? cumulativeProgress % 1
+          : 1 + (cumulativeProgress % 1); // Handle negative progress correctly, need to flip to positive range
 
       // Translation
+      const position = curveRef.current.getPointAt(progress);
       ref.current.position.copy(position);
 
-      // Trigger enter/exit animations
-      const distance = curveRef.current.getLength() * progress;
-      if (distance < sceneTextEnterExitAnimationThreshold) {
-        // Child enter
-        setEnterChildRef(ref);
-      } else if (
-        distance >
-        curveRef.current.getLength() - sceneTextEnterExitAnimationThreshold
-      ) {
-        // Child exit
-        setExitChildRef(ref);
-      }
+      // Scale Animation Scrubbing
+      childrenScaleAnimationsRef.current[index]?.progress(progress);
     });
   });
 
-  // ===================== Enter/Exit Animation =====================
-  // Enter Animation
-  // Scale up when entering
+  // ======================== Scale Animation =======================
+  // Scale up on enter to scale down on exist done in 1 timeline across entire length of path
+  // Created one per child to avoid conflicts
   useGSAP(() => {
-    if (enterChildRef) {
-      gsap.to(enterChildRef.current.scale, {
-        x: 1,
-        y: 1,
-        z: 1,
-        duration:
-          sceneTextEnterExitAnimationThreshold /
-          curveRef.current.getLength() /
-          speed, // threshold distance / curve distance = progress; progress / speed (progress per second) = time
-        ease: "power2.out",
-      });
-    }
-  }, [enterChildRef]);
+    console.log("Setting up scale animations for children along path");
+    childrenRefs.forEach((ref, index) => {
+      const tl = gsap.timeline({ paused: true });
+      const scaleAnimDuration =
+        sceneTextEnterExitAnimationThreshold / Math.abs(speed); // Duration for scale up/down animations at enter/exit
+      const idleDuration =
+        curveRef.current.getLength() / Math.abs(speed) - scaleAnimDuration * 2; // Duration for idle phase in between
 
-  // Exit Animation
-  // Scale down when exiting
-  useGSAP(() => {
-    if (exitChildRef) {
-      gsap.to(exitChildRef.current.scale, {
-        x: 0,
-        y: 0,
-        z: 0,
-        duration:
-          sceneTextEnterExitAnimationThreshold /
-          curveRef.current.getLength() /
-          speed, // threshold distance / curve distance = progress; progress / speed (progress per second) = time
-        ease: "power2.in",
-      });
-    }
-  }, [exitChildRef]);
+      tl.fromTo(
+        ref.current.scale,
+        {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+        {
+          x: 1,
+          y: 1,
+          z: 1,
+          duration: scaleAnimDuration,
+          ease: "power2.out",
+        }
+      )
+        .to({}, { duration: idleDuration }) // Idle phase
+        .to(ref.current.scale, {
+          x: 0,
+          y: 0,
+          z: 0,
+          duration: scaleAnimDuration,
+          ease: "power2.in",
+        });
+
+      childrenScaleAnimationsRef.current[index] = tl;
+    });
+  }, [childrenRefs, speed, points]); // repeat change/ childrenRefs change, need reassign new animations. speed/points change, need to recalc durations
 
   // ========================== Render ==========================
   return (

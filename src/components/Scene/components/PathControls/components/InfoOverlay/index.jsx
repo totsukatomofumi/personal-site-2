@@ -58,7 +58,7 @@ const InfoOverlay = ({ position, gap, repeat, setRepeat, speed, setSpeed }) => {
         </div>
         <input
           type="range"
-          min="0"
+          min="-1"
           max="1"
           step="0.001"
           value={speed}
